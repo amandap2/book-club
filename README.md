@@ -2,6 +2,7 @@
 
 A book club website that centralizes the collection of books read, reading statistics, and AI-powered personalized reading suggestions.
 
+
 ## Features
 
 - **Home page** — club logo, reading statistics, and a year-by-year summary

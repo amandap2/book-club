@@ -1,0 +1,31 @@
+kind = "web"
+previewPath = "/"
+title = "Clube do Livro"
+version = "1.0.0"
+id = "artifacts/book-club"
+router = "path"
+
+[[integratedSkills]]
+name = "react-vite"
+version = "1.0.0"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22315
+
+[services.development]
+run = "pnpm --filter @workspace/book-club run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/book-club", "run", "build" ]
+publicDir = "artifacts/book-club/dist/public"
+serve = "static"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22315"
+BASE_PATH = "/"

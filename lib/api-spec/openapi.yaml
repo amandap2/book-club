@@ -1,0 +1,212 @@
+openapi: 3.1.0
+info:
+  # Do not change the title, if the title changes, the import paths will be broken
+  title: Api
+  version: 0.1.0
+  description: Clube do Livro Caxias API
+servers:
+  - url: /api
+    description: Base API path
+tags:
+  - name: health
+    description: Health operations
+  - name: books
+    description: Book archive operations
+  - name: recommendations
+    description: Reading recommendations
+paths:
+  /healthz:
+    get:
+      operationId: healthCheck
+      tags: [health]
+      summary: Health check
+      description: Returns server health status
+      responses:
+        "200":
+          description: Healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthStatus"
+
+  /books:
+    get:
+      operationId: listBooks
+      tags: [books]
+      summary: List all books
+      parameters:
+        - name: year
+          in: query
+          required: false
+          schema:
+            type: ["integer", "null"]
+          description: Filter by year
+        - name: genre
+          in: query
+          required: false
+          schema:
+            type: ["string", "null"]
+          description: Filter by genre
+      responses:
+        "200":
+          description: List of books
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Book"
+
+  /books/{id}:
+    get:
+      operationId: getBook
+      tags: [books]
+      summary: Get a single book
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+      responses:
+        "200":
+          description: Book details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Book"
+        "404":
+          description: Not found
+
+  /books/years:
+    get:
+      operationId: listYears
+      tags: [books]
+      summary: List all years with books
+      responses:
+        "200":
+          description: List of years
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: integer
+
+  /books/stats:
+    get:
+      operationId: getStats
+      tags: [books]
+      summary: Get reading statistics
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ReadingStats"
+
+  /recommendations:
+    get:
+      operationId: getRecommendations
+      tags: [recommendations]
+      summary: Get AI-powered book recommendations
+      responses:
+        "200":
+          description: List of recommendations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Recommendation"
+
+components:
+  schemas:
+    HealthStatus:
+      type: object
+      properties:
+        status:
+          type: string
+      required:
+        - status
+
+    Book:
+      type: object
+      properties:
+        id:
+          type: integer
+        title:
+          type: string
+        author:
+          type: string
+        year:
+          type: integer
+        rating:
+          type: ["number", "null"]
+        genre:
+          type: ["string", "null"]
+        createdAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - title
+        - author
+        - year
+        - rating
+        - genre
+        - createdAt
+
+    ReadingStats:
+      type: object
+      properties:
+        totalBooks:
+          type: integer
+        booksThisYear:
+          type: integer
+        averageRating:
+          type: ["number", "null"]
+        topRatedBook:
+          $ref: "#/components/schemas/Book"
+        mostReadAuthor:
+          type: string
+        booksByYear:
+          type: array
+          items:
+            $ref: "#/components/schemas/YearCount"
+      required:
+        - totalBooks
+        - booksThisYear
+        - averageRating
+        - topRatedBook
+        - mostReadAuthor
+        - booksByYear
+
+    YearCount:
+      type: object
+      properties:
+        year:
+          type: integer
+        count:
+          type: integer
+      required:
+        - year
+        - count
+
+    Recommendation:
+      type: object
+      properties:
+        title:
+          type: string
+        author:
+          type: string
+        reason:
+          type: string
+        similarTo:
+          type: string
+      required:
+        - title
+        - author
+        - reason
+        - similarTo
